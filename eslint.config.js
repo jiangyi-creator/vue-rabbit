@@ -23,5 +23,12 @@ export default defineConfig([
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
 
+  // 允许 index.vue 作为组件名
+  {
+    rules: {
+      'vue/multi-word-component-names': 'off',
+    },
+  },
+
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),
 ])
