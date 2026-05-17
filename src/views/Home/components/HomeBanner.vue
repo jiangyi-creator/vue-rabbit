@@ -2,6 +2,13 @@
 import { getBannerAPI } from '@/apis/home';
 import {onMounted, ref} from 'vue'
 
+defineProps({
+  visible: {
+    type: Boolean,
+    default: true
+  }
+})
+
 const bannerList = ref([])
 
 const getBanner = async () => {
@@ -16,7 +23,7 @@ onMounted(() => getBanner())
 
 
 <template>
-  <div class="home-banner">
+  <div class="home-banner" v-show="visible">
     <el-carousel height="500px">
       <el-carousel-item v-for="item in bannerList" :key="item.id">
         <img :src="item.imgUrl" alt="">

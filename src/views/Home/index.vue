@@ -1,16 +1,19 @@
 <script setup>
+import { ref } from 'vue'
 import HomeCategory from './components/HomeCategory.vue'
 import HomeBanner from './components/HomeBanner.vue'
 import HomeNew from './components/HomeNew.vue'
 import HomeHot from './components/HomeHot.vue'
 import homeProduct from './components/HomeProduct.vue'
 import Homepanel from './components/Homepanel.vue'
+
+const isLayerShow = ref(false)
 </script>
 
 <template>
   <div class="container">
-    <HomeCategory />
-    <HomeBanner />
+    <HomeCategory @layer-show="isLayerShow = true" @layer-hide="isLayerShow = false" />
+    <HomeBanner :visible="!isLayerShow" />
   </div>
   <HomeNew />
   <HomeHot />
