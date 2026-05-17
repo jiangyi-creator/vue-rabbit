@@ -34,15 +34,28 @@ onMounted(() => getGoodList())
 
 // tab栏切换
 const tabChange = () => {
-  // console.log('tab栏切换了', reqData.value.sortField)
   reqData.value.page = 1
+  disabled.value = false
   getGoodList()
+}
+
+// 加载更多 — 使用 ElementPlus v-infinite-scroll 指令
+const disabled = ref(false)
+const load = async () => {
+  if (disabled.value) return
+  console.log('加载更多了')
+  reqData.value.page++
+  const res = await getSubCategoryAPI(reqData.value)
+  goodList.value = [...goodList.value, ...res.result.items]
+  if (res.result.items.length === 0) {
+    disabled.value = true
+  }
 }
 
 </script>
 
 <template>
-  <div class="container ">
+  <div class="container" v-infinite-scroll="load" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="100">
     <!-- 面包屑 -->
     <div class="bread-container">
       <el-breadcrumb separator=">">

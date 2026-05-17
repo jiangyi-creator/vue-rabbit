@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { ElInfiniteScroll } from 'element-plus'
 
 import App from './App.vue'
 import router from './router'
@@ -15,4 +16,5 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(lazyPlugin)
+app.directive('infinite-scroll', ElInfiniteScroll)
 app.mount('#app')
