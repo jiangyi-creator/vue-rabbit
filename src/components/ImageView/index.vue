@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useMouseInElement } from '@vueuse/core'
 
 // 图片列表
 const imageList = [
@@ -10,11 +11,21 @@ const imageList = [
   "https://yanxuan-item.nosdn.127.net/f881cfe7de9a576aaeea6ee0d1d24823.jpg"
 ]
 
-// 2.绑定点击事件 点击小图切换大图
+// 1.绑定点击事件 点击小图切换大图
 const activeIndex = ref(0)
 const imgChange = (i) => {
   activeIndex.value = i
 }
+
+// 2.获取鼠标所在位置
+const target = ref(null)
+const {elementX, elementY, isOutside} = useMouseInElement(target)
+
+// 3.滑块位置 (滑块200x200, 容器400x400, 可移动范围0~200)
+const clamp = (val, min, max) => Math.min(Math.max(val, min), max)
+const left = computed(() => clamp(elementX.value - 100, 0, 200))
+const top = computed(() => clamp(elementY.value - 100, 0, 200))
+
 </script>
 
 
@@ -24,7 +35,7 @@ const imgChange = (i) => {
     <div class="middle" ref="target">
       <img :src="imageList[activeIndex]" alt="" />
       <!-- 蒙层小滑块 -->
-      <div class="layer" :style="{ left: `0px`, top: `0px` }"></div>
+      <div class="layer" v-show="!isOutside" :style="{ transform: `translate(${left}px, ${top}px)` }"></div>
     </div>
     <!-- 小图列表 -->
     <ul class="small">
@@ -33,13 +44,11 @@ const imgChange = (i) => {
       </li>
     </ul>
     <!-- 放大镜大图 -->
-    <div class="large" :style="[
-      {
-        backgroundImage: `url(${imageList[0]})`,
-        backgroundPositionX: `0px`,
-        backgroundPositionY: `0px`,
-      },
-    ]" v-show="false"></div>
+    <div class="large" :style="{
+      backgroundImage: `url(${imageList[activeIndex]})`,
+      backgroundPositionX: `${-left * 2}px`,
+      backgroundPositionY: `${-top * 2}px`,
+    }" v-show="!isOutside"></div>
   </div>
 </template>
 
@@ -74,10 +83,10 @@ const imgChange = (i) => {
     width: 200px;
     height: 200px;
     background: rgba(0, 0, 0, 0.2);
-    // 绝对定位 然后跟随咱们鼠标控制left和top属性就可以让滑块移动起来
+    position: absolute;
     left: 0;
     top: 0;
-    position: absolute;
+    will-change: transform;
   }
 
   .small {

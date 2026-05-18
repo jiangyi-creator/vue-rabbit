@@ -3,7 +3,7 @@ import DetailHot from './components/DetailHot.vue';
 import { getDetail } from '@/apis/detail';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-// 1.放大镜效果步骤1, 引入通用组件
+// 1.引入通用组件 图片预览
 import ImageView from '@/components/ImageView/index.vue'
 
 const goods = ref({})
