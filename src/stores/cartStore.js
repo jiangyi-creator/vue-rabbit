@@ -25,9 +25,6 @@ export const useCartStore = defineStore('cart', () => {
     item.selected = selected
   }
 
-  // 是否全选
-  const isAll = computed(() => cartList.value.every((item) => item.selected))
-
   // 全选功能
   const allCheck = (selected) => {
     cartList.value.forEach(item => item.selected = selected)
@@ -39,14 +36,25 @@ export const useCartStore = defineStore('cart', () => {
     cartList.value.splice(idx, 1)
   }
 
+  // 计算属性
   // 计算总数和总价
   const allCount = computed(() => cartList.value.reduce((a, c) => a + c.count, 0))
   const allPrice = computed(() => cartList.value.reduce((a,c) => a + c.count * c.price , 0))
+
+  // 已选择数量和已选择数量的价格
+  const selectedCount = computed(() => cartList.value.filter(item => item.selected).reduce((a, c) => a + c.count, 0))
+  const selectedPrice = computed(() => cartList.value.filter(item => item.selected).reduce((a, c) => a + c.count * c.price, 0))
+
+  // 是否全选
+  const isAll = computed(() => cartList.value.every((item) => item.selected))
+
   return {
     cartList,
     allCount,
     allPrice,
     isAll,
+    selectedCount,
+    selectedPrice,
     allCheck,
     addCart,
     delCart,
