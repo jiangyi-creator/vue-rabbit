@@ -2,22 +2,34 @@
 
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-
+import { useUserStore } from './user'
+import { insertCartAPI, findNewCartListAPI } from '@/apis/cart'
 export const useCartStore = defineStore('cart', () => {
+  const userStore = useUserStore()
+  const isLogin = computed(() => userStore.userInfo.token)
   // 1.定义state管理数据
   const cartList = ref([])
   // 2.定义action获取接口方法
-  const addCart = (goods) => {
-    // 加入购物车
-    // 添加过 count + 1
-    // 未添加过 -直接push
-    const item = cartList.value.find((item) => goods.skuId === item.skuId)
-    if(item) {
-      item.count++
+  const addCart = async (goods) => {
+    const {skuId, count} = goods
+    if(isLogin.value) {
+      // 登录之后做的操作
+      await insertCartAPI({skuId, count})
+      const res = await findNewCartListAPI()
+      cartList.value = res.result
     } else {
-      cartList.value.push(goods)
+      // 加入购物车
+      // 添加过 count + 1
+      // 未添加过 -直接push
+      const item = cartList.value.find((item) => goods.skuId === item.skuId)
+      if(item) {
+        item.count++
+      } else {
+        cartList.value.push(goods)
+      }
     }
   }
+
   // 单选框功能
   const singleCheck = (skuId, selected) => {
     // 通过传过来的skuId找到选中的那一项，将那一项的选中状态与页面渲染的选中状态匹配
