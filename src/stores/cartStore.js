@@ -18,6 +18,12 @@ export const useCartStore = defineStore('cart', () => {
       cartList.value.push(goods)
     }
   }
+  // 单选框功能
+  const singleCheck = (skuId, selected) => {
+    // 通过传过来的skuId找到选中的那一项，将那一项的选中状态与页面渲染的选中状态匹配
+    const item = cartList.value.find((item) => item.skuId === skuId)
+    item.selected = selected
+  }
 
   // 删除购物车
   const delCart = (skuId) => {
@@ -33,7 +39,8 @@ export const useCartStore = defineStore('cart', () => {
     addCart,
     delCart,
     allCount,
-    allPrice
+    allPrice,
+    singleCheck
   }
 },{
   persist: true,

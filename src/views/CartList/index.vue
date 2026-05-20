@@ -3,7 +3,13 @@
 import { useCartStore } from '@/stores/cartStore'
 const cartStore = useCartStore()
 
-const cartList = []
+const singleCheck = (i, selected) => {
+  console.log(i, selected)
+  // 不能判断选择的商品是数组中的哪一个元素
+  // 传递参数过去选中其中的skuId 来判断是选中的哪一个元素 selected 选中状态
+  cartStore.singleCheck(i.skuId, selected)
+}
+
 </script>
 
 <template>
@@ -27,7 +33,8 @@ const cartList = []
           <tbody>
             <tr v-for="i in cartStore.cartList" :key="i.id">
               <td>
-                <el-checkbox />
+                <!-- 单选框 -->
+                <el-checkbox :model-value="i.selected" @change="(selected) =>singleCheck(i, selected)"/>
               </td>
               <td>
                 <div class="goods">
