@@ -1,8 +1,13 @@
 <script setup>
-import { getCheckInfoAPI } from '@/apis/checkout'
+import { getCheckInfoAPI, createOrderAPI } from '@/apis/checkout'
 import { onMounted, ref } from 'vue';
-const checkInfo = ref({})
-const curAddress = ref({})
+import { useRouter } from 'vue-router';
+// 清空购物车
+import { useCartStore } from '@/stores/cartStore';
+const cartStore = useCartStore()
+const router = useRouter()
+const checkInfo = ref({})  //订单对象
+const curAddress = ref({})  //默认地址
 const getCheckInfo= async () => {
   const res = await getCheckInfoAPI()
   checkInfo.value = res.result
@@ -10,6 +15,31 @@ const getCheckInfo= async () => {
   // 从地址列表中筛选出来 isDefault === 0 那一项
   const item = checkInfo.value.userAddresses.find(item => item.isDefault === 0)
   curAddress.value = item
+}
+
+const createOrder = async () => {
+  const res = await createOrderAPI({
+    deliveryTimeType: 1,
+    payType: 1,
+    payChannel: 1,
+    buyerMessage: '',
+    goods: checkInfo.value.goods.map(item => {
+      return {
+        skuId: item.skuId,
+        count: item.count
+      }
+    }),
+    addressId: curAddress.value.id
+  })
+  const orderId = res.result.id
+  router.push({
+    path: '/pay',
+    query: {
+      id: orderId
+    }
+  })
+  // 清空购物车
+  cartStore.updateNewList()
 }
 
 onMounted(() => getCheckInfo())
@@ -123,7 +153,7 @@ const confirm = () => {
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <el-button type="primary" size="large" >提交订单</el-button>
+          <el-button @click="createOrder" type="primary" size="large">提交订单</el-button>
         </div>
       </div>
     </div>
